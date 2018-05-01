@@ -9,6 +9,10 @@ Concurrency Patterns and features found in Java, through multithreaded programmi
   *	Explicit
 	* Reentrant
 	* ReadWrite 
+* Common Thread Featrues
+  *	wait,notify,notifyALl -Producer Consumer
+  *	
+    
 * Synchronizers
   *	Latches
   *	Semaphores

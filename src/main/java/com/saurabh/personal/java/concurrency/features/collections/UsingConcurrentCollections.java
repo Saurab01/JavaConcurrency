@@ -1,5 +1,8 @@
 package com.saurabh.personal.java.concurrency.features.collections;
 
+import com.saurabh.personal.java.concurrency.features.CommonUtils;
+
+import java.util.Iterator;
 import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.*;
@@ -7,13 +10,14 @@ import java.util.concurrent.*;
 /**
  * Concurrent collections are an alternative to the Synchronized Collections.
  * 
- * Supports concurrent access from n threads and performs better than
- * Synchronized collections.
+ * Supports concurrent access from n threads and performs better than Synchronized collections.
  *
  */
 public class UsingConcurrentCollections {
 
-	/**
+    ConcurrentHashMap<Integer,String> conHashMap=new ConcurrentHashMap<>();
+    static UsingConcurrentCollections classObj=new UsingConcurrentCollections();
+    /**
 	 * Map for Concurrent access. Sacrifices some aspects of synchronization to
 	 * achieve better performance.
 	 *
@@ -31,41 +35,16 @@ public class UsingConcurrentCollections {
 	 * 
 	 * - Just a few Writers can modify it.
 	 */
-	public static void usingConcurrentHashMap() {
-		ExecutorService executor = Executors.newCachedThreadPool();
-		System.out.println("=== ConcurrentHashMap ===");
-		Random random = new Random();
-		ConcurrentHashMap<UUID, Integer> valuesPerUuid = new ConcurrentHashMap<>();
-		// atomic operations
-		valuesPerUuid.putIfAbsent(UUID.randomUUID(), random.nextInt(100));
+    public static void usingConcurrentHashMap() {
+        ExecutorService executor = Executors.newCachedThreadPool();
+        System.out.println("=== ConcurrentHashMap ===");
+        executor.execute(classObj.new WriteThreasOne());
+        executor.execute(classObj.new WriteThreasTwo());
+        executor.execute(classObj.new ReadThread());
+        executor.shutdownNow();
 
-		// simulating concurrent access - no duplicates should be inserted
-		for (int i = 0; i < 100; i++) {
-			if (i % 6 == 0) {
-				// write
-				executor.execute(() -> {
-					UUID uuid = UUID.randomUUID();
-					Integer value = random.nextInt(10);
-					System.out.println("Added " + uuid + " - " + value);
-					valuesPerUuid.putIfAbsent(uuid, value);
-				});
-			} else {
-				// read
-				executor.execute(() -> System.out.println("Printed " + valuesPerUuid.values().toString()));
-			}
-		}
-
-		// Finishing
-		executor.shutdown();
-		try {
-			executor.awaitTermination(2000, TimeUnit.SECONDS);
-			// space for other examples
-			Thread.sleep(2000);
-			System.out.println("\n\n\n\n");
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-	}
+        CommonUtils.awaitTermination(executor);
+    }
 
 	/**
 	 * Replacement for synchronized list. Based on the immutable object concept.
@@ -109,14 +88,7 @@ public class UsingConcurrentCollections {
 
 		// Finishing
 		executor.shutdown();
-		try {
-			executor.awaitTermination(2000, TimeUnit.SECONDS);
-			// space for other examples
-			Thread.sleep(2000);
-			System.out.println("\n\n\n\n");
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
+        CommonUtils.awaitTermination(executor);
 	}
 
 	/**
@@ -197,10 +169,42 @@ public class UsingConcurrentCollections {
 		}
 	}
 
-	public static void main(String[] args) {
-		usingConcurrentHashMap();
-		usingCopyOnWriteArrayList();
-		usingBlockingQueue();
-	}
+
+
+    class WriteThreasOne implements Runnable {
+        @Override
+        public void run() {
+            for(int i= 1; i<=1000; i++) {
+                System.err.println("For Thread: "+Thread.currentThread().getName());
+                System.err.println(i+"  A"+ i);
+                conHashMap.putIfAbsent(i, "A"+ i);
+            }
+        }
+    }
+    class WriteThreasTwo implements Runnable {
+        @Override
+        public void run() {
+            for(int i= 1; i<=500; i++) {
+                System.out.println("For Thread: "+Thread.currentThread().getName());
+                System.out.println(i+"  B"+ i);
+                conHashMap.put(i, "B"+ i);  //if present will replace
+            }
+        }
+    }
+    class ReadThread implements Runnable {
+        @Override
+        public void run() {
+            Iterator<Integer> ite = conHashMap.keySet().iterator();
+            while(ite.hasNext()){
+                Integer key = ite.next();
+                System.out.println(key+" : " + conHashMap.get(key));
+            }
+        }
+    }
+    public static void main(String[] args) {
+        usingConcurrentHashMap();
+        usingCopyOnWriteArrayList();
+        usingBlockingQueue();
+    }
 
 }
