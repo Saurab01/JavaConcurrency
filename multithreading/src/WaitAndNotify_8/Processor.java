@@ -46,9 +46,10 @@ public class Processor {
 
 
     public void produce() throws InterruptedException {
-        synchronized (this) {
+        synchronized (this) {  //synchronising on processor object itself (intrinsic)
             System.out.println("Producer thread running ....");
-            wait();//this.wait() is fine.
+            wait();//this.wait() is fine.  //object class method
+            //wait can be called only in synchronised code block
             System.out.println("Resumed.");
         }
     }
@@ -61,8 +62,11 @@ public class Processor {
             scanner.nextLine();
             System.out.println("Return key pressed.");
             notify();
+            //again notify could be called from synchronised code block only
+            //notify does not handle over control like wait
             Thread.sleep(5000);
-            System.out.println("Consumption done.");
+            System.out.println("Consumption done."); //after 5 seconds this relinquish lock,
+            // and flow goes to producer
         }
     }
 }

@@ -41,6 +41,7 @@ public class App {
      * the wait/notify mechanism.
      */
     private static BlockingQueue<Integer> queue = new ArrayBlockingQueue<>(10);
+    //thread safe, producer and consumer will put/take value in same DS --FIFO
 
     public static void main(String[] args) throws InterruptedException {
 
@@ -73,7 +74,7 @@ public class App {
     private static void producer() throws InterruptedException {
         Random random = new Random();
         while (true) {//loop indefinitely
-            queue.put(random.nextInt(100));//if queue is full (10) waits
+            queue.put(random.nextInt(100));//if queue is full (10) waits  //random number genrate 0 to 99
         }
     }
 

@@ -2,20 +2,6 @@ package LowLevelProducerConsumer_9;
 
 import java.util.LinkedList;
 import java.util.Random;
-
-/**
- * Codes with minor comments are from
- * <a href="http://www.caveofprogramming.com/youtube/">
- * <em>http://www.caveofprogramming.com/youtube/</em>
- * </a>
- * <br>
- * also freely available at
- * <a href="https://www.udemy.com/java-multithreading/?couponCode=FREE">
- * <em>https://www.udemy.com/java-multithreading/?couponCode=FREE</em>
- * </a>
- *
- * @author Z.B. Celik <celik.berkay@gmail.com>
- */
 @SuppressWarnings("InfiniteLoopStatement")
 public class Processor {
 
@@ -48,7 +34,7 @@ public class Processor {
                     lock.wait();
                 }
 
-                int value = list.removeFirst();
+                int value = list.removeFirst(); //for FIFO, remove first, add to last
                 System.out.print("Removed value by consumer is: " + value);
                 System.out.println(" Now list size is: " + list.size());
                 lock.notify();

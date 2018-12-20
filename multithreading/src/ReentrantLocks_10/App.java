@@ -1,23 +1,13 @@
 package ReentrantLocks_10;
 
 /**
- * the {@link java.util.concurrent.locks.ReentrantLock} class in Java as an
- * alternative to synchronized code blocks.
+ *{@link java.util.concurrent.locks.ReentrantLock} class in Java as an alternative to synchronized code blocks.
  * <br>
  * {@link java.util.concurrent.locks.ReentrantLock}s let you do all the
  * stuff that you can do with {@code synchronized}, {@link Object#wait()} and
- * {@link Object#notify()}, plus some more stuff. Besides that may come in
- * handy from time to time.
- * <br><br>
- * Source:<em>
- * http://docs.oracle.com/javase/1.5.0/docs/api/java/util/concurrent/locks/ReentrantLock.html
- * </em>
- * <br><br>
+ * {@link Object#notify()}, plus some more stuff. Besides that may come in handy from time to time.
  * {@link java.util.concurrent.locks.ReentrantLock} Extended capabilities
  * include:
- * <br>
- * <ul>
- * <li>
  * The ability to have more than one {@link java.util.concurrent.locks.Condition}
  * variable per monitor.
  * </li>
