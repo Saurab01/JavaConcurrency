@@ -1,4 +1,4 @@
-package features.executors;
+package features.executors_5;
 
 import features.TaskRunnable;
 
@@ -11,6 +11,7 @@ import java.util.concurrent.*;
 /**
  * Thread creation is expensive and difficult to manage.
  * Executors help us to decouple task submission from execution.
+
  * We have 4 types of executors:
  * - Single Thread Executor: Uses a single worker to process tasks.
  * - Cached Thread Pool: Unbounded thread limit, good performance for long running tasks.
@@ -25,38 +26,40 @@ import java.util.concurrent.*;
  * used to create custom Executors.
  * 
  * shutdown() -> Waits for tasks to terminate and release resources.
- * shutdownNow() -> Try to stops all executing tasks and returns a list of not
- * executed tasks.
- *
+ * shutdownNow() -> Try to stops all executing tasks and returns a list of not executed tasks.
+ * awaitTermination()-->Blocks until all tasks have completed execution after a shutdown
+ * request, or the timeout occurs, or the current thread is interrupted, whichever happens first.
  */
 public class UsingExecutors {
 
-	public static void usingSingleThreadExecutor() {
-		System.out.println("=== SingleThreadExecutor ===");
-		ExecutorService singleThreadExecutor = Executors.newSingleThreadExecutor();
-		singleThreadExecutor.execute(() -> System.out.println("Print this."));
-		singleThreadExecutor.execute(() -> System.out.println("and this one to."));
-		singleThreadExecutor.shutdown();
-		try {
-			singleThreadExecutor.awaitTermination(4, TimeUnit.SECONDS);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-		System.out.println("\n\n");
-	}
+	public static void usingSingleThreadExecutor() throws InterruptedException {
 
-	public static void usingCachedThreadPool() {
-		System.out.println("=== CachedThreadPool ===");
+        System.out.println("\n\n=== SingleThreadExecutor ===");
+		ExecutorService singleThreadExecutor = Executors.newSingleThreadExecutor();
+
+        singleThreadExecutor.execute(() -> System.out.println("Print this."));
+		singleThreadExecutor.execute(() -> System.out.println("and this one to."));
+
+        singleThreadExecutor.shutdown();
+        System.out.println("Shutdown all threads");
+        singleThreadExecutor.awaitTermination(4, TimeUnit.SECONDS);
+    }
+
+	public static void usingCachedThreadPool() throws InterruptedException {
+		System.out.println("\n\n=== CachedThreadPool ===");
 		ExecutorService cachedThreadPool = Executors.newCachedThreadPool();
+
 		List<Future<UUID>> uuids = new LinkedList<>();
 		for (int i = 0; i < 10; i++) {
 			Future<UUID> submitted = cachedThreadPool.submit(() -> {
-				UUID randomUUID = UUID.randomUUID();
+                TimeUnit.SECONDS.sleep(1);
+                UUID randomUUID = UUID.randomUUID();
 				System.out.println("UUID " + randomUUID + " from " + Thread.currentThread().getName());
 				return randomUUID;
 			});
 			uuids.add(submitted);
 		}
+
 		cachedThreadPool.execute(() -> uuids.forEach((f) -> {
 			try {
 				System.out.println("Result " + f.get() + " from thread " + Thread.currentThread().getName());
@@ -64,18 +67,13 @@ public class UsingExecutors {
 				e.printStackTrace();
 			}
 		}));
-		cachedThreadPool.shutdown();
-		try {
-			cachedThreadPool.awaitTermination(4, TimeUnit.SECONDS);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-		System.out.println("\n\n");
 
+		cachedThreadPool.shutdown();
+        cachedThreadPool.awaitTermination(4, TimeUnit.SECONDS);
 	}
 
 	public static void usingFixedThreadPool() {
-		System.out.println("=== FixedThreadPool ===");
+		System.out.println("\n\n=== FixedThreadPool ===");
 		ExecutorService fixedPool = Executors.newFixedThreadPool(4);
         /*At any point, at most {@code nThreads} threads will be active processing tasks.
      * If additional tasks are submitted when all threads are active, they will wait in the queue until a thread is
@@ -112,11 +110,10 @@ public class UsingExecutors {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		System.out.println("\n\n");
 	}
 
 	public static void usingScheduledThreadPool() {
-		System.out.println("=== ScheduledThreadPool ===");
+		System.out.println("\n\n=== ScheduledThreadPool ===");
 		ScheduledExecutorService scheduledThreadPool = Executors.newScheduledThreadPool(4);
 		scheduledThreadPool.scheduleAtFixedRate(
 				() -> System.out.println("Print every 2s"), 0, 2, TimeUnit.SECONDS);
@@ -142,10 +139,10 @@ public class UsingExecutors {
 		}
 	}
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws InterruptedException {
 		//usingSingleThreadExecutor();
-		//usingCachedThreadPool();
-		usingFixedThreadPool();
+		usingCachedThreadPool();
+		//usingFixedThreadPool();
 		//usingScheduledThreadPool();
 	}
 }

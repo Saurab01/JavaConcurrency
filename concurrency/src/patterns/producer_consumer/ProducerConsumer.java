@@ -7,8 +7,7 @@ import java.util.concurrent.*;
  * Pattern: Producer-Consumer
  * 
  * Motivations: A common design pattern is the Producer-Consumer, where the
- * logic that produces data is decoupled from the consumer logic through
- * threads.
+ * logic that produces data is decoupled from the consumer logic through threads.
  * 
  * Intent: Create a simple Producer-Consumer relationship using Threads,
  * using BlockinQueue with multiple Producers/Consumers threads.
@@ -22,6 +21,7 @@ public class ProducerConsumer {
 	private BlockingQueue<String> data = new LinkedBlockingQueue<>();
 
 	private Callable<Void> consumer = () -> {
+
 		while (true) {
 			String dataUnit = data.poll(5, TimeUnit.SECONDS);
 			if (dataUnit == null)

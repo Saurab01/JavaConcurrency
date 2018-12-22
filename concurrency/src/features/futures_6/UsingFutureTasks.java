@@ -1,4 +1,4 @@
-package features.futures;
+package features.futures_6;
 
 import features.TaskFactorialCallable;
 
@@ -21,11 +21,12 @@ import java.util.concurrent.*;
  */
 public class UsingFutureTasks {
 
-	public static void main(String[] args) {
-        ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(2);
+	public static void main(String[] args) throws ExecutionException, InterruptedException {
+        ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(2); //max 2 at a time
         List<Future<Integer>> resultList = new ArrayList<>();
         Random random = new Random();
 
+        System.out.println("setting callables");
         for (int i=0; i<4; i++)
         {
             Integer number = random.nextInt(10);
@@ -33,18 +34,14 @@ public class UsingFutureTasks {
             Future<Integer> result = executor.submit(calculator);   //submit method
             resultList.add(result);
         }
+        System.out.println("\n*********getting future objects results****\n");
+
         for(Future<Integer> future : resultList)
         {
-            try
-            {
-                System.out.println("Future result is - " + " - " + future.get() + "; And Task done is "
-                        + future.isDone());
-            }
-            catch (InterruptedException | ExecutionException e){
-                e.printStackTrace();
-            }
+            System.out.println("*Future result is - "+ future.get() + "; And Task done is "
+                        + future.isDone()+"; And if cancelled-"+future.isCancelled());
         }
-        //shut down the executor service now
+        System.out.println("\n*********shut down the executor service now****\n");
         executor.shutdown();
     }
 }
