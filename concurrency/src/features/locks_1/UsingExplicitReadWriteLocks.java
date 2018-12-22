@@ -1,4 +1,4 @@
-package features.locks;
+package features.locks_1;
 
 import java.util.Random;
 import java.util.UUID;

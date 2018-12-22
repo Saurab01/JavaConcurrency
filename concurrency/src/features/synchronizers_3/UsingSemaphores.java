@@ -1,4 +1,4 @@
-package features.synchronizers;
+package features.synchronizers_3;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -10,40 +10,33 @@ import java.util.concurrent.TimeUnit;
  * perform a certain action;
  *
  * - First you give a number of 'permits';
- * 
  * - Activities will acquire it and release when they're done;
- * 
  * - If none is available, activity will block until one become available.
  *
  * Good for resource pools.
- *
  */
 public class UsingSemaphores {
 	public static void main(String[] args) {
 		ExecutorService executor = Executors.newCachedThreadPool();
-		Semaphore semaphore = new Semaphore(3);
+		Semaphore semaphore = new Semaphore(3,true);  //true for fairness--optional (FIFO)
 
 		Runnable r = () -> {
 			try {
-				System.out.println("Trying to acquire - " + Thread.currentThread().getName());
-				if (semaphore.tryAcquire(2, TimeUnit.SECONDS)) {
-					// use-get resource
-					// simulate work in progress
-					System.out.println("Acquired - " + Thread.currentThread().getName());
-					Thread.sleep(2000);
-					System.out.println("Done - " + Thread.currentThread().getName());
-				}
+                semaphore.acquire();
+                System.out.println("for available permits:: "+ semaphore.availablePermits()+
+                        "  Acquired - " + Thread.currentThread().getName());
+                Thread.sleep(2000);
+                System.out.println("\nDone and Releasing for thread- " + Thread.currentThread().getName());
+                semaphore.release();
+
 			} catch (InterruptedException e) {
 				e.printStackTrace();
-			} finally {
-				semaphore.release();
 			}
 		};
-		for (int i = 0; i < 4; i++) {
+        System.out.println("starting threads\n");
+		for (int i = 0; i < 6; i++) {
 			executor.execute(r);
 		}
-		
 		executor.shutdown();
-
 	}
 }

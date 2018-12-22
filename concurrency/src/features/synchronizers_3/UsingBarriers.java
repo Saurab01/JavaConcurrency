@@ -1,4 +1,4 @@
-package features.synchronizers;
+package features.synchronizers_3;
 
 import java.util.Random;
 import java.util.concurrent.BrokenBarrierException;
@@ -20,28 +20,32 @@ public class UsingBarriers {
 
 	public static void main(String[] args) {
 
-		ExecutorService executor = Executors.newCachedThreadPool();
-		Runnable barrierAction = () -> System.out.println("Well done, guys!");
-
+		Runnable barrierAction = () -> System.out.println("\nWell done, guys! ran by thread::"+
+                Thread.currentThread().getName()+"\n");
 		CyclicBarrier barrier = new CyclicBarrier(10, barrierAction);
+        //second param is optional to indicate action to be run by the last thread that trips the barrier
+        //important--last thread
 
 		Runnable task = () -> {
 			try {
 				// simulating a task that can take at most 1sec to run
-				System.out.println("Doing task for " + Thread.currentThread().getName());
 				Thread.sleep(new Random().nextInt(10) * 100);
-				System.out.println("Done for " + Thread.currentThread().getName());
-				barrier.await();
-			} catch (InterruptedException | BrokenBarrierException e) {
+                System.out.println("entering barrier " + Thread.currentThread().getName());
+                barrier.await();
+                System.out.println("*****Crossing barrier " + Thread.currentThread().getName());
+            } catch (InterruptedException | BrokenBarrierException e) {
 				e.printStackTrace();
 			}
 		};
 
+
+        ExecutorService executor = Executors.newCachedThreadPool();
 		for (int i = 0; i < 10; i++) {
 			executor.execute(task);
 		}
+        System.out.println("\n::Completed Doing graceful shutdown");
 		executor.shutdown();
-
-	}
+        System.out.println("\n\n:::Completed");
+    }
 
 }

@@ -1,47 +1,21 @@
-package features.locks;
+package features.locks_1;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-/**
- * Every Java object has an intrinsic lock (or a monitor lock) associated with
- * it.
- * 
- * Every Java object can be used as a lock.
- * 
- * Intrinsic Locks are mutually exclusive, so one only thread can 'hold' the
- * lock at time when it's using the synchronization mechanism.
- * 
- * The lock is freed when the synchronized method/block ends.
- * 
- * Synchronize serializes access for what is locked and guarantee memory
- * visibility for the changes that happened inside the synchronized scope to all
- * threads.
- * 
- * Intrinsic locks are reentrant: if you are holding it, you can acquire it
- * again, without deadlocking.
- */
 public class UsingIntrinsicLocks {
-
 	private boolean state;
 
-	/**
-	 * When used in method signature, synchronized use 'this' as a lock.
-	 * 
-	 * Instead of 'this', other objects variables can be used
-	 */
-	public synchronized void mySynchronizedMethod() {
-		state = !state;
-		// Everything in this method can only be accessed by the thread who hold the
-		// lock.
-		System.out.println("My state is:" + state);
-		// Without sync: states have no order guarantee true, true, false, true...
-		// With sync: always true, false, true, false...
+    // Everything in this method can only be accessed by the thread who hold the lock
+    // Without sync: states have no order guarantee true, true, false, true...
+    // With sync: always true, false, true, false...
+    public synchronized void mySynchronizedMethod() {
+        System.out.println("\nStarted For threadName: "+Thread.currentThread().getName());
+        state = !state;
+		System.out.println("state is:" + state);
 	}
 
-	/**
-	 * It's possible to lock only a block inside the method
-	 */
+    //It's possible to lock only a block inside the method
 	public void mySynchronizedBlock() {
 		/*
 		 * Everything in this block can only be accessed by the thread who hold the
@@ -61,7 +35,8 @@ public class UsingIntrinsicLocks {
 	 * Already holds a lock when called
 	 */
 	public synchronized void reentrancy() {
-		System.out.println("Before acquiring again");
+        System.out.println("\nStarted For threadName: "+Thread.currentThread().getName());
+        System.out.println("Before acquiring again");
 		// Tries to hold it without releasing the lock
 		synchronized (this) {
 			System.out.println("I'm own it! " + Thread.currentThread().getName());
@@ -71,14 +46,18 @@ public class UsingIntrinsicLocks {
 	public static void main(String[] args) throws InterruptedException {
 		ExecutorService executor = Executors.newCachedThreadPool();
 		UsingIntrinsicLocks uil = new UsingIntrinsicLocks();
-		for (int i = 0; i < 100; i++) {
+
+        System.out.println("****************************\nTesting Synchronised method\n");
+		for (int i = 0; i < 10; i++) {
 			executor.execute(() -> uil.mySynchronizedMethod());
 		}
 		Thread.sleep(1000);
+        System.out.println("\n****************************\nTesting Synchronised Block\n");
 		for (int i = 0; i < 10; i++) {
 			executor.execute(() -> uil.mySynchronizedBlock());
 		}
 		Thread.sleep(1000);
+        System.out.println("\n****************************\nReentrant lock test\n");
 		for (int i = 0; i < 10; i++) {
 			executor.execute(() -> uil.reentrancy());
 		}
