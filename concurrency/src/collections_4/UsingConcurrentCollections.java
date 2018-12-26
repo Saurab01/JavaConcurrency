@@ -1,4 +1,4 @@
-package features.collections_4;
+package collections_4;
 
 import features.CommonUtils;
 

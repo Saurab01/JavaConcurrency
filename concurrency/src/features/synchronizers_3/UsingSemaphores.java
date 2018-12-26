@@ -23,7 +23,7 @@ public class UsingSemaphores {
 		Runnable r = () -> {
 			try {
                 semaphore.acquire();
-                System.out.println("for available permits:: "+ semaphore.availablePermits()+
+                System.out.println("available permits:: "+ semaphore.availablePermits()+
                         "  Acquired - " + Thread.currentThread().getName());
                 Thread.sleep(2000);
                 System.out.println("\nDone and Releasing for thread- " + Thread.currentThread().getName());

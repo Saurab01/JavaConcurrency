@@ -1,4 +1,4 @@
-package features.collections_4;
+package collections_4;
 
 import java.util.Vector;
 import java.util.concurrent.ExecutorService;

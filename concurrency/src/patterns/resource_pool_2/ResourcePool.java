@@ -1,4 +1,4 @@
-package patterns.resource_pool;
+package patterns.resource_pool_2;
 
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
@@ -38,7 +38,7 @@ public class ResourcePool<T> {
 	public T get(long secondsToTimeout) throws InterruptedException {
 		semaphore.acquire();
 		try {
-			T resource = resources.poll(secondsToTimeout, TIME_UNIT);
+			T resource = resources.poll(secondsToTimeout, TIME_UNIT); //poll takes head
 			return resource;
 		} finally {
 			semaphore.release();
